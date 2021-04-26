@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\CategorieRepository;
+use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=CategorieRepository::class)
+ * @ORM\Entity(repositoryClass=ProduitRepository::class)
  */
-class Categorie
+class Produit
 {
     /**
      * @ORM\Id
@@ -35,13 +35,18 @@ class Categorie
     private $visuel;
 
     /**
-     * @ORM\OneToMany(targetEntity=Produit::class, mappedBy="categorie")
+     * @ORM\Column(type="float")
      */
-    private $produits;
+    private $prix;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Categorie::class, inversedBy="produits")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $categorie;
 
     public function __construct()
     {
-        $this->produits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,32 +90,26 @@ class Categorie
         return $this;
     }
 
-    /**
-     * @return Collection|Produit[]
-     */
-    public function getProduits(): Collection
+    public function getPrix(): ?float
     {
-        return $this->produits;
+        return $this->prix;
     }
 
-    public function addProduit(Produit $produit): self
+    public function setPrix(float $prix): self
     {
-        if (!$this->produits->contains($produit)) {
-            $this->produits[] = $produit;
-            $produit->setCategorie($this);
-        }
+        $this->prix = $prix;
 
         return $this;
     }
 
-    public function removeProduit(Produit $produit): self
+    public function getCategorie(): ?Categorie
     {
-        if ($this->produits->removeElement($produit)) {
-            // set the owning side to null (unless already changed)
-            if ($produit->getCategorie() === $this) {
-                $produit->setCategorie(null);
-            }
-        }
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): self
+    {
+        $this->categorie = $categorie;
 
         return $this;
     }
