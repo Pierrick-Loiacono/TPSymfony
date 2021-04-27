@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique{% endblock %}
+
+{% block body %}
+
+
+    <div class="row">
+        {% for produit in produits %}
+            <div class="col-4">
+                <div class="card" style="width: 18rem;">
+                    <img src="{{ asset(produit.visuel) }}" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">{{produit.libelle}}</h5>
+                        <p class="card-text">{{produit.texte}}</p>
+                        <b>{{produit.prix}} €</b>
+
+                    </div>
+                    <div class="card-footer">
+{#                        <a href="{{ path('ajout_panier',{ produitId: produit.id }) }}" class="btn btn-primary">{{ 'addCart' | trans }}</a>#}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

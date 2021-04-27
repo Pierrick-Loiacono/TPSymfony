@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'account' | trans }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="col-sm-12 col-md-6">
+        <h2>{{ usager.nom }} {{ usager.prenom }}</h2>
+            {{ include('usager/_form.html.twig') }}
+        </div>
+    </div>
+
+{% endblock %}

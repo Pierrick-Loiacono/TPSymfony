@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AdminController!{% endblock %}
+
+{% block body %}
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Prenom</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Username</th>
+            <th scope="col">Roles</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for utilisateur in utilisateurs %}
+            <tr>
+                <th scope="row">{{utilisateur.id}}</th>
+                <td>{{utilisateur.prenom}}</td>
+                <td>{{utilisateur.nom}}</td>
+                <td>{{utilisateur.email}}</td>
+                <td>{{utilisateur.userName}}</td>
+                <td>{{utilisateur.roles|join(',')}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

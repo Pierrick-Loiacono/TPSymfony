@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Categorie;
 use App\Entity\Produit;
+use App\Entity\Utilisateur;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -100,6 +101,28 @@ class AppFixtures extends Fixture
             ->setPrix(2.50)
             ->setCategorie($junkFood);
         $manager->persist($produit);
+
+        $user = new Utilisateur();
+        $user->setNom('admin')
+            ->setEmail('admin@test.com')
+            ->setPrenom('admin')
+            ->setRoles(['ROLE_ADMIN'])
+            ->setPassword('$2y$13$dL3a8MmPHnuXUgQOj6o20.kZpDG04vUiGKNv6pKkqnYy522GSiOuK');
+        $manager->persist($user);
+
+        $user = new Utilisateur();
+        $user->setNom('test')
+            ->setPrenom('test')
+            ->setEmail('test@test.com')
+            ->setPassword('$2y$13$dL3a8MmPHnuXUgQOj6o20.kZpDG04vUiGKNv6pKkqnYy522GSiOuK');
+        $manager->persist($user);
+
+        $user = new Utilisateur();
+        $user->setNom('Testage')
+            ->setPrenom('Testage')
+            ->setEmail('Testage@Testage.com')
+            ->setPassword('$2y$13$dL3a8MmPHnuXUgQOj6o20.kZpDG04vUiGKNv6pKkqnYy522GSiOuK');
+        $manager->persist($user);
 
         $manager->flush();
     }
