@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
-use App\Form\Utilisateur1Type;
+use App\Form\UtilisateurType;
 use App\Repository\UtilisateurRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/utilisateur")
@@ -27,15 +28,21 @@ class UtilisateurController extends AbstractController
 
     /**
      * @Route("/new", name="utilisateur_new", methods={"GET","POST"})
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @return Response
      */
-    public function new(Request $request): Response
+    public function new(Request $request, UserPasswordEncoderInterface $encoder): Response
     {
         $utilisateur = new Utilisateur();
-        $form = $this->createForm(Utilisateur1Type::class, $utilisateur);
+        $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+
+            $form->get('password')->getData();
+            $utilisateur->setPassword($encoder->encodePassword($utilisateur, $form->get('password')->getData()));
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
@@ -63,7 +70,7 @@ class UtilisateurController extends AbstractController
      */
     public function edit(Request $request, Utilisateur $utilisateur): Response
     {
-        $form = $this->createForm(Utilisateur1Type::class, $utilisateur);
+        $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
