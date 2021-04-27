@@ -17,7 +17,6 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/liste_utilisateurs", name="liste_utilisateurs")
-     * @IsGranted("ROLE_ADMIN", message="Accès refusé")
      * @param UtilisateurRepository $userRepo
      * @return Response
      */
