@@ -68,7 +68,7 @@ class UtilisateurController extends AbstractController
         if (!in_array('ROLE_ADMIN, ', $this->getUser()->getRoles())){
             // Si c'est pas le même user
             if ($this->getUser()->getUsername() != $utilisateur->getUsername()){
-                $this->addFlash('success', 'Erreur : Utilisateur introuvable');
+                $this->addFlash('success', 'Erreur : Utilisateurzgeg introuvable');
                 return $this->redirectToRoute('accueil');
             }
         }
