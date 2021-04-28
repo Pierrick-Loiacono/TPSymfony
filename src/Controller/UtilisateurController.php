@@ -8,6 +8,7 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\DBAL\Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,14 +42,14 @@ class UtilisateurController extends AbstractController
 
             if ($userTest){
                 $this->addFlash('danger', 'Utilisateur existe déjà');
-                return $this->redirectToRoute('utilisateur_index');
+                return $this->redirectToRoute('accueil');
             }
 
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
             $this->addFlash('success', 'Utilisateur créé');
-            return $this->redirectToRoute('utilisateur_index');
+            return $this->redirectToRoute('accueil');
         }
 
         return $this->render('utilisateur/new.html.twig', [
@@ -68,7 +69,7 @@ class UtilisateurController extends AbstractController
         if (!in_array('ROLE_ADMIN, ', $this->getUser()->getRoles())){
             // Si c'est pas le même user
             if ($this->getUser()->getUsername() != $utilisateur->getUsername()){
-                $this->addFlash('success', 'Erreur : Utilisateurzgeg introuvable');
+                $this->addFlash('success', 'Erreur : Utilisateur introuvable');
                 return $this->redirectToRoute('accueil');
             }
         }
@@ -80,16 +81,45 @@ class UtilisateurController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="utilisateur_edit", methods={"GET","POST"})
+     * @IsGranted("ROLE_USER", message="Accès refusé")
+     * @param Request $request
+     * @param Utilisateur $utilisateur
+     * @param UserPasswordEncoderInterface $encoder
+     * @return Response
      */
-    public function edit(Request $request, Utilisateur $utilisateur): Response
+    public function edit(Request $request, Utilisateur $utilisateur, UserPasswordEncoderInterface $encoder): Response
     {
+        // Si c'est pas un admin
+        if (!in_array('ROLE_ADMIN, ', $this->getUser()->getRoles())){
+            // Si c'est pas le même user
+            if ($this->getUser()->getUsername() != $utilisateur->getUsername()){
+                $this->addFlash('success', 'Erreur : Utilisateur introuvable');
+                return $this->redirectToRoute('accueil');
+            }
+        }
+
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
+
+        $form->add('password', PasswordType::class, [
+            'mapped' => false,
+            'required' => false,
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('utilisateur_index');
+            if (strlen($form->get('password')->getData()) > 8) {
+                $form->get('password')->getData();
+                $utilisateur->setPassword($encoder->encodePassword($utilisateur, $form->get('password')->getData()));
+                $this->addFlash('success', 'Mot de passe modifié');
+            } else if (strlen($form->get('password')->getData()) > 0) {
+                $this->addFlash('warning', 'Mot de passe inchangé. Le mot doit contenir 8 caractères minimum');
+            }
+
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Modification enregistré');
+            return $this->redirectToRoute('utilisateur_show', ['id' => $utilisateur->getId()]);
         }
 
         return $this->render('utilisateur/edit.html.twig', [

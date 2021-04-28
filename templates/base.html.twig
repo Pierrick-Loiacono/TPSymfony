@@ -19,8 +19,6 @@
         {% include 'twig/navbar.html.twig' %}
         <div class="container">
 
-
-
             {% for label, messages in app.flashes(['success', 'warning', 'danger']) %}
                 {% for message in messages %}
                     <div class="flash-notice alert alert-{{ label }}">
