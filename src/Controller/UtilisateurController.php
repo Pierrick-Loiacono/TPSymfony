@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Utilisateur;
 use App\Form\UtilisateurType;
 use App\Repository\UtilisateurRepository;
+use Doctrine\DBAL\Exception;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,15 +18,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class UtilisateurController extends AbstractController
 {
-    /**
-     * @Route("/", name="utilisateur_index", methods={"GET"})
-     */
-    public function index(UtilisateurRepository $utilisateurRepository): Response
-    {
-        return $this->render('utilisateur/index.html.twig', [
-            'utilisateurs' => $utilisateurRepository->findAll(),
-        ]);
-    }
 
     /**
      * @Route("/new", name="utilisateur_new", methods={"GET","POST"})
@@ -32,7 +25,7 @@ class UtilisateurController extends AbstractController
      * @param UserPasswordEncoderInterface $encoder
      * @return Response
      */
-    public function new(Request $request, UserPasswordEncoderInterface $encoder): Response
+    public function new(Request $request, UserPasswordEncoderInterface $encoder, UtilisateurRepository $utilisateurRepository): Response
     {
         $utilisateur = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
@@ -43,9 +36,18 @@ class UtilisateurController extends AbstractController
 
             $form->get('password')->getData();
             $utilisateur->setPassword($encoder->encodePassword($utilisateur, $form->get('password')->getData()));
+
+            $userTest = $utilisateurRepository->findByEmail($form->get('email')->getData());
+
+            if ($userTest){
+                $this->addFlash('danger', 'Utilisateur existe déjà');
+                return $this->redirectToRoute('utilisateur_index');
+            }
+
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Utilisateur créé');
             return $this->redirectToRoute('utilisateur_index');
         }
 
@@ -55,11 +57,22 @@ class UtilisateurController extends AbstractController
         ]);
     }
 
+
     /**
      * @Route("/{id}", name="utilisateur_show", methods={"GET"})
+     * @IsGranted("ROLE_USER", message="Accès refusé")
      */
     public function show(Utilisateur $utilisateur): Response
     {
+        // Si c'est pas un admin
+        if (!in_array('ROLE_ADMIN, ', $this->getUser()->getRoles())){
+            // Si c'est pas le même user
+            if ($this->getUser()->getUsername() != $utilisateur->getUsername()){
+                $this->addFlash('success', 'Erreur : Utilisateur introuvable');
+                return $this->redirectToRoute('accueil');
+            }
+        }
+
         return $this->render('utilisateur/show.html.twig', [
             'utilisateur' => $utilisateur,
         ]);
