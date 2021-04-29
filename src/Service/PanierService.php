@@ -108,8 +108,8 @@ class PanierService
     }
 
 
-    public function panierToCommande(Utilisateur $utilisateur){
-
+    public function panierToCommande(Utilisateur $utilisateur)
+    {
         $commande = new Commande();
         $commande->setUtilisateur($utilisateur);
         $commande->setDateCommande(new \DateTime());
