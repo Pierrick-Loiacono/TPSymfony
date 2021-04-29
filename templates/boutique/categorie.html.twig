@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="alert alert-dark col-md-12 text-center">
+            <h1>
+                <i class="fas fa-store"></i>
+                Boutique / {{ nombreRayon }} rayons
+            </h1>
+        </div>
+    </div>
+
+    <div>
+        <div class="row">
+            {% for categorie in categories %}
+                    <div class="col-4">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ asset(categorie.visuel) }}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">{{categorie.libelle}}</h5>
+                                <p class="card-text">{{categorie.texte}}</p>
+                                <a href="{{ path('rayon', {'id':categorie.id}) }}" class="btn btn-primary">Voir</a>
+                            </div>
+                        </div>
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

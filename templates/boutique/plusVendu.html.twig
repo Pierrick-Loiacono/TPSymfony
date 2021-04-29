@@ -1,0 +1,10 @@
+<div class="jumbotron mt-5">
+    {% for plusVendu in listPlusVendu %}
+        <a href="{{ path('rayon', {id: plusVendu.id}) }}">
+            <div class="card">
+                <img src="{{ asset(plusVendu.visuel) }}" alt="" class="card-img-top">
+                {{ plusVendu.libelle }}
+            </div>
+        </a>
+    {% endfor %}
+</div>
