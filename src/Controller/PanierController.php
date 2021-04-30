@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 
 /**
@@ -21,6 +22,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class PanierController extends AbstractController
 {
 
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     /**
      * @Route("/", name="panier")
      * @param PanierService $panierService
@@ -28,6 +36,15 @@ class PanierController extends AbstractController
      */
     public function index(PanierService $panierService)
     {
+
+        $user = $this->getDoctrine()->getRepository(Utilisateur::class)->findOneByEmail($this->getUser()->getUsername());
+
+        dump($user);
+        dump($this->getUser());
+        dump($this->security->getUser());
+
+
+
         $panierWithItems = [];
         $panier = $panierService->getContenu();
 

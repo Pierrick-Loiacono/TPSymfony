@@ -22,17 +22,13 @@ class ProduitType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('libelle');
-
-        if ($this->security->getUser()){
-            $builder->add('texte')
-            ->add('visuel');
-        }
-
-        $builder->add('prix')
+            ->add('libelle')
+            ->add('texte')
+            ->add('visuel')
+            ->add('prix')
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
-                'choice_label' => 'libelle',
+                'choice_label' => 'texte',
             ])
         ;
     }

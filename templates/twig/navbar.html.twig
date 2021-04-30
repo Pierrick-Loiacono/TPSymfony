@@ -29,6 +29,10 @@
                     {% endif %}
                 </div>
             </li>
+            <li class="nav-item dropdown">
+                Panier {{ panier_service.getNbProduct() }}
+
+            </li>
         </ul>
         <form action="{{ path('recherche') }}" method="get" class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" name="recherche" type="search" placeholder="Rechercher..." aria-label="Rechercher">
